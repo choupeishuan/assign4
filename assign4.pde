@@ -243,6 +243,7 @@ int yA=floor(random(122,175));
     enemyYAUp[i] %= height-3*enemyHeight;
     enemyYADown[i] %= height-3*enemyHeight;
     
+    if(i<=2){
     if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYAUp[i] && fighterY<=enemyYAUp[i]+enemyHeight && imgEnemyAUp[i]){
     imgEnemyAUp[i]=!imgEnemy;
     hpBar-=40;
@@ -256,6 +257,23 @@ int yA=floor(random(122,175));
     hpBar-=0;
     }
     }
+    }else{
+    if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYAUp[4-i] && fighterY<=enemyYAUp[4-i]+enemyHeight && imgEnemyAUp[i]){
+    imgEnemyAUp[i]=!imgEnemy;
+    hpBar-=40;
+    imgFrameAUp[i]=true;
+    
+    if(imgFrameAUp[i]){
+    image(frame[i],enemyXA[i],enemyYAUp[4-i]);
+    }
+    if(hpBar<0){
+    hpBar=0;
+    hpBar-=0;
+    }
+    }
+    }
+    
+    if(i<=2){
     if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYADown[i] && fighterY<=enemyYADown[i]+enemyHeight && imgEnemyADown[i]){
     imgEnemyADown[i]=!imgEnemy;
     hpBar-=40;
@@ -269,6 +287,23 @@ int yA=floor(random(122,175));
     hpBar-=0;
     }
     }
+    }else{
+    if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYADown[4-i] && fighterY<=enemyYADown[4-i]+enemyHeight && imgEnemyADown[i]){
+    imgEnemyADown[i]=!imgEnemy;
+    hpBar-=40;
+    imgFrameADown[i]=true;
+    
+    if(imgFrameADown[i]){
+    image(frame[i],enemyXA[i],enemyYADown[4-i]);
+    }
+    if(hpBar<0){
+    hpBar=0;
+    hpBar-=0;
+    }
+    }
+    }
+    
+    
   }
   if (enemyXA[4]>width){ 
     for(i=0;i<enemyNum;i++){
