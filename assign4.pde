@@ -5,6 +5,7 @@ PImage fighterImg;
 PImage hpBarImg;
 PImage treasureImg;
 
+
 float backgroundX,backgroundY; //background
 float treasureX,treasureY; //treasure
 float hpBar; //hpBar
@@ -41,9 +42,19 @@ int enemyHeight=61;
 int fighterWidth=51;
 int fighterHeight=51;
 int spacing=5;
+
 int yC=floor(random(0,420));
 int yB=floor(random(0,175));
-int yA=floor(random(0,175));
+int yA=floor(random(122,175));
+
+//frame
+
+PImage[]frame=new PImage[enemyNum];
+boolean [] imgFrameC=new boolean[enemyNum];
+boolean [] imgFrameB=new boolean[enemyNum];
+boolean [] imgFrameAUp=new boolean[enemyNum];
+boolean [] imgFrameADown=new boolean[enemyNum];
+final boolean imgFrame=false;
 
 void setup () {
   
@@ -76,8 +87,11 @@ void setup () {
     imgEnemyC[i]=imgEnemy;
     imgEnemyB[i]=imgEnemy;
     imgEnemyAUp[i]=imgEnemy;
-    imgEnemyADown[i]=imgEnemy;
+    imgEnemyADown[i]=imgEnemy;  
+
+    frame[i]=loadImage("img/flame"+(i+1)+".png");
   }
+
 }
 
 void draw() {
@@ -126,6 +140,9 @@ void draw() {
   image(treasureImg,treasureX,treasureY);
  
   //enemy
+int yC=floor(random(0,420));
+int yB=floor(random(0,175));
+int yA=floor(random(122,175));
   
   int i;
   switch(enemyMove){
@@ -139,6 +156,13 @@ void draw() {
     if(fighterX>=enemyXC[i] && fighterX+fighterWidth<=enemyXC[i]+enemyWidth && fighterY+fighterHeight>=enemyYC[i] && fighterY<=enemyYC[i]+enemyHeight && imgEnemyC[i]){
     imgEnemyC[i]=!imgEnemy;
     hpBar-=40;
+    
+    imgFrameC[i]=true;
+    if(imgFrameC[i]){
+      image(frame[i],enemyXC[i],enemyYC[i]);
+      
+    }
+    
     if(hpBar<0){
     hpBar=0;
     hpBar-=0;
@@ -148,9 +172,16 @@ void draw() {
   
 
   if (enemyXC[4]>width){
+    for(i=0;i<enemyNum;i++){
+    enemyXB[i]=i-i*(enemyWidth+spacing)-enemyWidth;
+    enemyYB[i]=yB+i*enemyHeight; 
+    enemyXB[i]+=3;
+    enemyYB[i] %= height-enemyHeight;
+   imgEnemyB[i]=imgEnemy;
+    }
     enemyMove= B; 
+    
   }
-
   break;
   
   case B:
@@ -163,6 +194,11 @@ void draw() {
     if(fighterX>=enemyXB[i] && fighterX+fighterWidth<=enemyXB[i]+enemyWidth && fighterY+fighterHeight>=enemyYB[i] && fighterY<=enemyYB[i]+enemyHeight && imgEnemyB[i]){
     imgEnemyB[i]=!imgEnemy;
     hpBar-=40;
+    imgFrameB[i]=true;
+    
+    if(imgFrameB[i]){
+    image(frame[i],enemyXB[i],enemyYB[i]);
+    }
     if(hpBar<0){
     hpBar=0;
     hpBar-=0;
@@ -171,12 +207,22 @@ void draw() {
   }
   
   if (enemyXB[4]>width){
+    for(i=0;i<enemyNum;i++){
+    enemyXA[i]=i-i*(enemyWidth+spacing)-enemyWidth;
+    enemyYAUp[i]=yA+i*enemyHeight;
+    enemyYADown[i]=yA-i*enemyHeight;
+    enemyXA[i]+=3;
+    enemyYAUp[i] %= height-3*enemyHeight;
+    enemyYADown[i] %= height-3*enemyHeight;
+   imgEnemyAUp[i]=imgEnemy;
+   imgEnemyADown[i]=imgEnemy;
+    }
     enemyMove= A;
   }
   break;
   
   case A:
-  for(i=0;i<5;i++){
+  for(i=0;i<enemyNum;i++){
     if(i<=2){
      if(imgEnemyAUp[i]){
      image(enemyImg,enemyXA[i],enemyYAUp[i]);
@@ -196,9 +242,15 @@ void draw() {
     enemyXA[i]+=3;
     enemyYAUp[i] %= height-3*enemyHeight;
     enemyYADown[i] %= height-3*enemyHeight;
+    
     if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYAUp[i] && fighterY<=enemyYAUp[i]+enemyHeight && imgEnemyAUp[i]){
     imgEnemyAUp[i]=!imgEnemy;
     hpBar-=40;
+    imgFrameAUp[i]=true;
+    
+    if(imgFrameAUp[i]){
+    image(frame[i],enemyXA[i],enemyYAUp[i]);
+    }
     if(hpBar<0){
     hpBar=0;
     hpBar-=0;
@@ -207,13 +259,25 @@ void draw() {
     if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYADown[i] && fighterY<=enemyYADown[i]+enemyHeight && imgEnemyADown[i]){
     imgEnemyADown[i]=!imgEnemy;
     hpBar-=40;
+    imgFrameADown[i]=true;
+    
+    if(imgFrameADown[i]){
+    image(frame[i],enemyXA[i],enemyYADown[i]);
+    }
     if(hpBar<0){
     hpBar=0;
     hpBar-=0;
     }
     }
   }
-  if (enemyXA[4]>width){
+  if (enemyXA[4]>width){ 
+    for(i=0;i<enemyNum;i++){
+    enemyXC[i]=i-i*(enemyWidth+spacing)-enemyWidth;
+    enemyYC[i]=yC; 
+    enemyXC[i]+=3;
+    enemyYC[i] %= height-enemyHeight;
+   imgEnemyC[i]=imgEnemy;
+    }
     enemyMove= C;
   }
   break;
