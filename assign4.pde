@@ -4,13 +4,18 @@ PImage enemyImg;
 PImage fighterImg;
 PImage hpBarImg;
 PImage treasureImg;
+PImage start1Img,start2Img,end1Img,end2Img;
 
 
 float backgroundX,backgroundY; //background
 float treasureX,treasureY; //treasure
+float enemyX,enemyY; //enemy
 float hpBar; //hpBar
 float fighterX,fighterY; //fighter
 float speed = 5;
+
+boolean playStart1 = true, playStart2 = false;
+boolean playEnd1 = false, playEnd2 = false;
 
 //enemy
 int enemyNum=5;
@@ -27,10 +32,15 @@ boolean [] imgEnemyAUp=new boolean[enemyNum];
 boolean [] imgEnemyADown=new boolean[enemyNum];
 final boolean imgEnemy=true;
 
-int enemyMove;
-final int C =0;
-final int B =1;
-final int A =2;
+int gameState;
+final int GAME_START =0;
+final int GAME_RUN =1;
+final int GAME_LOSE =2;
+
+int enemyRun;
+final int ENEMY_C =0;
+final int ENEMY_B =1;
+final int ENEMY_A =2;
 
 boolean upPressed = false;
 boolean downPressed = false;
@@ -66,6 +76,11 @@ void setup () {
   hpBarImg = loadImage("img/hp.png");
   treasureImg = loadImage("img/treasure.png");
   
+  start1Img = loadImage("img/start1.png");
+  start2Img = loadImage("img/start2.png");
+  end1Img = loadImage("img/end1.png");
+  end2Img = loadImage("img/end2.png");
+  
   backgroundX=640;
   backgroundY=0;
   treasureX=floor(random(0,601));
@@ -91,10 +106,26 @@ void setup () {
 
     frame[i]=loadImage("img/flame"+(i+1)+".png");
   }
+  
+  gameState =0;
+  enemyRun =0;
 
 }
 
 void draw() {
+  
+  if(playStart2){
+   image(start2Img,0,0);
+  }   
+  if(playStart1){
+    image(start1Img,0,0); 
+  }
+  if(playEnd2){
+   image(end2Img,0,0);
+  }   
+  if(playEnd1){
+    image(end1Img,0,0); 
+  }
   
   if(upPressed){
     fighterY-=speed;
@@ -108,6 +139,28 @@ void draw() {
   if(rightPressed){
     fighterX+=speed;
   }
+  
+  switch(gameState)  {
+ case GAME_START: 
+  //mouseMoved
+  if(mouseX>200 && mouseX<460 && mouseY>370 && mouseY<420){
+    playStart2 = false;
+    playStart1 = true;  
+  }
+  else{
+    playStart2 = true;
+    playStart1 = false;
+  } 
+  
+  //mousePressed
+  if(mouseX>200 && mouseX<460 && mouseY>370 && mouseY<420 && mousePressed){
+       playStart1 = false;
+       playStart2 = false;
+       gameState = GAME_RUN;    
+  }
+       break;
+       
+ case GAME_RUN:      
   
   background(0);
   
@@ -139,14 +192,10 @@ void draw() {
   //treasure
   image(treasureImg,treasureX,treasureY);
  
-  //enemy
-int yC=floor(random(0,420));
-int yB=floor(random(0,175));
-int yA=floor(random(122,175));
-  
+  //enemy  
   int i;
-  switch(enemyMove){
-  case C: 
+  switch(enemyRun){
+  case ENEMY_C: 
   for(i=0;i<enemyNum;i++){
     if(imgEnemyC[i]){
     image(enemyImg,enemyXC[i],enemyYC[i]);
@@ -179,12 +228,12 @@ int yA=floor(random(122,175));
     enemyYB[i] %= height-enemyHeight;
    imgEnemyB[i]=imgEnemy;
     }
-    enemyMove= B; 
+    enemyRun= ENEMY_B; 
     
   }
   break;
   
-  case B:
+  case ENEMY_B:
   for(i=0;i<enemyNum;i++){
     if(imgEnemyB[i]){
     image(enemyImg,enemyXB[i],enemyYB[i]);
@@ -217,11 +266,11 @@ int yA=floor(random(122,175));
    imgEnemyAUp[i]=imgEnemy;
    imgEnemyADown[i]=imgEnemy;
     }
-    enemyMove= A;
+    enemyRun= ENEMY_A;
   }
   break;
   
-  case A:
+  case ENEMY_A:
   for(i=0;i<enemyNum;i++){
     if(i<=2){
      if(imgEnemyAUp[i]){
@@ -313,7 +362,7 @@ int yA=floor(random(122,175));
     enemyYC[i] %= height-enemyHeight;
    imgEnemyC[i]=imgEnemy;
     }
-    enemyMove= C;
+    enemyRun= ENEMY_C;
   }
   break;
  
@@ -336,7 +385,45 @@ int yA=floor(random(122,175));
     }
    
    }
-
+   
+   if(hpBar <= 0){
+    gameState = GAME_LOSE;
+   }
+   break;
+   
+   case GAME_LOSE:
+      playEnd2 = true;
+      if(mouseX>=205 && mouseX<440 && mouseY>=310 && mouseY<=350){
+       playEnd2 = false;
+       playEnd1 = true;  
+      }
+      else{
+       playEnd2 = true;
+       playEnd1 = false;
+      } 
+      
+      if(mouseX>=205 && mouseX<440 && mouseY>=310 && mouseY<=350 && mousePressed){
+       playEnd1 = false;
+       playEnd2 = false; 
+       
+       fighterX = 589;
+       fighterY = 214.5;
+       for(i=0;i<enemyNum;i++){
+        enemyXC[i]=i-i*(enemyWidth+spacing)-enemyWidth;
+        enemyYC[i]=yC; 
+        enemyXC[i]+=3;
+        enemyYC[i] %= height-enemyHeight;
+        imgEnemyC[i]=imgEnemy;
+        }
+       treasureX = random(0,600);
+       treasureY = random(0,440) ;
+       hpBar = 40;
+       
+       enemyRun =ENEMY_C;
+       gameState = GAME_RUN; 
+      }
+       break;      
+  }
 }
 
 void keyPressed(){
