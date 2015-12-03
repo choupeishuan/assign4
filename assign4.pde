@@ -6,6 +6,13 @@ PImage hpBarImg;
 PImage treasureImg;
 PImage start1Img,start2Img,end1Img,end2Img;
 
+//bullet number
+PImage bullet;
+int bulletNum = 0;
+boolean [] bulletNumLimit = new boolean[5];
+float [] bulletX = new float [5];
+float [] bulletY = new float [5];
+int bulletSpeed;
 
 float backgroundX,backgroundY; //background
 float treasureX,treasureY; //treasure
@@ -66,6 +73,8 @@ boolean [] imgFrameAUp=new boolean[enemyNum];
 boolean [] imgFrameADown=new boolean[enemyNum];
 final boolean imgFrame=false;
 
+int currentFrame;
+
 void setup () {
   
   size(640,480) ; 
@@ -90,6 +99,8 @@ void setup () {
   fighterX=589;
   fighterY=214.5; 
   
+  currentFrame =0;
+  
   for(int i=0;i<enemyNum;i++){
     enemyXC[i]=i-i*(enemyWidth+spacing);
     enemyXB[i]=i-i*(enemyWidth+spacing);
@@ -106,6 +117,14 @@ void setup () {
 
     frame[i]=loadImage("img/flame"+(i+1)+".png");
   }
+  
+    //no bullet
+    bullet = loadImage ("img/shoot.png");
+    bulletSpeed = 3;
+  for (int i =0; i < bulletNumLimit.length ; i ++){
+    bulletNumLimit[i] = false;
+  }
+
   
   gameState =0;
   enemyRun =0;
@@ -192,6 +211,17 @@ void draw() {
   //treasure
   image(treasureImg,treasureX,treasureY);
  
+ //bullet
+      for (int i = 0; i < 5; i ++){
+        if (bulletNumLimit[i] == true){
+          image (bullet, bulletX[i], bulletY[i]);
+          bulletX[i] -= bulletSpeed;
+        }
+        if (bulletX[i] < - bullet.width){
+          bulletNumLimit[i] = false;
+        }
+      }
+ 
   //enemy  
   int i;
   switch(enemyRun){
@@ -205,19 +235,30 @@ void draw() {
     if(fighterX>=enemyXC[i] && fighterX+fighterWidth<=enemyXC[i]+enemyWidth && fighterY+fighterHeight>=enemyYC[i] && fighterY<=enemyYC[i]+enemyHeight && imgEnemyC[i]){
     imgEnemyC[i]=!imgEnemy;
     hpBar-=40;
-    
     imgFrameC[i]=true;
     if(imgFrameC[i]){
-      image(frame[i],enemyXC[i],enemyYC[i]);
-      
+      image(frame[i],enemyXC[i],enemyYC[i]); 
     }
-    
     if(hpBar<0){
     hpBar=0;
     hpBar-=0;
     }
     }
+    
+    for(int j=0;j<5;j++){
+    if( bulletNumLimit[j] && bulletX[j]+31>=enemyXC[i] && bulletX[j]<=enemyXC[i]+enemyWidth && bulletY[j]+27>=enemyYC[i] && bulletY[j]<=enemyYC[i]+enemyHeight && imgEnemyC[i]){
+    imgEnemyC[i]=!imgEnemy;
+    bulletNumLimit[j]=false;
+    imgFrameC[i]=true;
+    if(imgFrameC[i]){
+      image(frame[i],enemyXC[i],enemyYC[i]); 
+    }
+    }
+    }
+    
+
   }
+  
   
 
   if (enemyXC[4]>width){
@@ -228,6 +269,7 @@ void draw() {
     enemyYB[i] %= height-enemyHeight;
    imgEnemyB[i]=imgEnemy;
     }
+    
     enemyRun= ENEMY_B; 
     
   }
@@ -253,6 +295,18 @@ void draw() {
     hpBar-=0;
     }
     }
+    
+    for(int j=0;j<5;j++){
+    if( bulletNumLimit[j] && bulletX[j]+31>=enemyXB[i] && bulletX[j]<=enemyXB[i]+enemyWidth && bulletY[j]+27>=enemyYB[i] && bulletY[j]<=enemyYB[i]+enemyHeight && imgEnemyB[i]){
+    imgEnemyB[i]=!imgEnemy;
+    bulletNumLimit[j]=false;
+    imgFrameB[i]=true;
+    if(imgFrameB[i]){
+      image(frame[i],enemyXB[i],enemyYB[i]); 
+    }
+    }
+    }
+    
   }
   
   if (enemyXB[4]>width){
@@ -265,8 +319,9 @@ void draw() {
     enemyYADown[i] %= height-3*enemyHeight;
    imgEnemyAUp[i]=imgEnemy;
    imgEnemyADown[i]=imgEnemy;
-    }
+
     enemyRun= ENEMY_A;
+  }
   }
   break;
   
@@ -305,6 +360,18 @@ void draw() {
     hpBar=0;
     hpBar-=0;
     }
+    
+    for(int j=0;j<5;j++){
+    if( bulletNumLimit[j] && bulletX[j]+31>=enemyXA[i] && bulletX[j]<=enemyXA[i]+enemyWidth && bulletY[j]+27>=enemyYAUp[i] && bulletY[j]<=enemyYAUp[i]+enemyHeight && imgEnemyAUp[i]){
+    imgEnemyAUp[i]=!imgEnemy;
+    bulletNumLimit[j]=false;
+    imgFrameAUp[i]=true;
+    if(imgFrameAUp[i]){
+      image(frame[i],enemyXA[i],enemyYAUp[i]); 
+    }
+    }
+    }
+    
     }
     }else{
     if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYAUp[4-i] && fighterY<=enemyYAUp[4-i]+enemyHeight && imgEnemyAUp[i]){
@@ -320,6 +387,18 @@ void draw() {
     hpBar-=0;
     }
     }
+    
+    for(int j=0;j<5;j++){
+    if( bulletNumLimit[j] && bulletX[j]+31>=enemyXA[i] && bulletX[j]<=enemyXA[i]+enemyWidth && bulletY[j]+27>=enemyYAUp[4-i] && bulletY[j]<=enemyYAUp[4-i]+enemyHeight && imgEnemyAUp[i]){
+    imgEnemyAUp[i]=!imgEnemy;
+    bulletNumLimit[j]=false;
+    imgFrameAUp[i]=true;
+    if(imgFrameAUp[i]){
+      image(frame[i],enemyXA[i],enemyYAUp[4-i]); 
+    }
+    }
+    }
+    
     }
     
     if(i<=2){
@@ -335,6 +414,18 @@ void draw() {
     hpBar=0;
     hpBar-=0;
     }
+    
+    for(int j=0;j<5;j++){
+    if( bulletNumLimit[j] && bulletX[j]+31>=enemyXA[i] && bulletX[j]<=enemyXA[i]+enemyWidth && bulletY[j]+27>=enemyYADown[i] && bulletY[j]<=enemyYADown[i]+enemyHeight && imgEnemyADown[i]){
+    imgEnemyADown[i]=!imgEnemy;
+    bulletNumLimit[j]=false;
+    imgFrameADown[i]=true;
+    if(imgFrameADown[i]){
+      image(frame[i],enemyXA[i],enemyYADown[i]); 
+    }
+    }
+    }
+    
     }
     }else{
     if(fighterX>=enemyXA[i] && fighterX+fighterWidth<=enemyXA[i]+enemyWidth && fighterY+fighterHeight>=enemyYADown[4-i] && fighterY<=enemyYADown[4-i]+enemyHeight && imgEnemyADown[i]){
@@ -350,6 +441,18 @@ void draw() {
     hpBar-=0;
     }
     }
+    
+    for(int j=0;j<5;j++){
+    if( bulletNumLimit[j] && bulletX[j]+31>=enemyXA[i] && bulletX[j]<=enemyXA[i]+enemyWidth && bulletY[j]+27>=enemyYADown[4-i] && bulletY[j]<=enemyYADown[4-i]+enemyHeight && imgEnemyADown[i]){
+    imgEnemyADown[i]=!imgEnemy;
+    bulletNumLimit[j]=false;
+    imgFrameADown[i]=true;
+    if(imgFrameADown[i]){
+      image(frame[i],enemyXA[i],enemyYADown[4-i]); 
+    }
+    }
+    }
+    
     }
     
     
@@ -387,7 +490,11 @@ void draw() {
    }
    
    if(hpBar <= 0){
+    for(int j=0;j<5;j++){
+     bulletNumLimit[j] = false;
+    }
     gameState = GAME_LOSE;
+
    }
    break;
    
@@ -427,6 +534,9 @@ void draw() {
 }
 
 void keyPressed(){
+  
+ 
+  
   if(key == CODED){
     switch(keyCode){
       case UP:
@@ -446,6 +556,7 @@ void keyPressed(){
   }
 }
 void keyReleased(){
+   
   if(key == CODED){
     switch(keyCode){
       case UP:
@@ -460,6 +571,27 @@ void keyReleased(){
       case RIGHT:
        rightPressed = false;
        break;
+      
+    }
+  }
+  
+  //shoot bullet
+  if ( keyCode == ' '){
+    if (gameState == GAME_RUN){
+      if (bulletNumLimit[bulletNum] == false){
+        bulletNumLimit[bulletNum] = true;
+        bulletX[bulletNum] = fighterX - 10;
+        bulletY[bulletNum] = fighterY + fighterHeight/3;
+        bulletNum ++;
+      }   
+      if ( bulletNum > 4 ) {
+        bulletNum = 0;
+      }
+      if (bulletX[bulletNum]+31 < 0 ){
+        bulletNumLimit[bulletNum] = false;
+      }
+      
+
       
     }
   }
